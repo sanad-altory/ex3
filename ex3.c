@@ -21,102 +21,105 @@ Assignment: ex3
 
 char brands[NUM_OF_BRANDS][BRANDS_NAMES] = {"Toyoga", "HyunNight", "Mazduh", "FolksVegan", "Key-Yuh"};
 char types[NUM_OF_TYPES][TYPES_NAMES] = {"SUV", "Sedan", "Coupe", "GT"};
-// Prints the name of a car Brand by calling it from brand array.
-void PrintBrand(int x) {
-    for(int i = 0; i < brands[x][i] != '\0'; i++)
+// Prints the name of a car Brand by calling it from brands array.
+void printBrand(int x) {
+    for(int i = 0; brands[x][i] != '\0'; i++)
         printf("%c", brands[x][i]);
-    //printf(" ");
 }
 // Prints the Types of cars for the brands by calling it from types array.
-void PrintType(int x) {
-    for(int i = 0; i < types[x][i] != '\0'; i++)
+void printType(int x) {
+    for(int i = 0; types[x][i] != '\0'; i++)
         printf("%c", types[x][i]);
-    //printf(" ");
 }
 // Sums of all the car types for a specific brand on the given day.
-int SumTypes(int cube[DAYS_IN_YEAR][NUM_OF_BRANDS][NUM_OF_TYPES], int day, int brand) {
+int sumTypes(int cube[DAYS_IN_YEAR][NUM_OF_BRANDS][NUM_OF_TYPES], int day, int brand) {
     int sum = 0;
     for (int i = 0; i < NUM_OF_TYPES; i++)
         sum += cube[day][brand][i];
     return sum;
 }
 // Sums of all the car brands on the given day.
-int SumBrands(int cube[DAYS_IN_YEAR][NUM_OF_BRANDS][NUM_OF_TYPES], int day) {
+int sumBrands(int cube[DAYS_IN_YEAR][NUM_OF_BRANDS][NUM_OF_TYPES], int day) {
     int sum = 0;
     for (int i = 0; i < NUM_OF_BRANDS; i++)
-        sum += SumTypes(cube, day, i);
+        sum += sumTypes(cube, day, i);
     return sum;
 }
 // Prints all the sales data for a specific brand over the over all the days.
-void AllData(int cube[DAYS_IN_YEAR][NUM_OF_BRANDS][NUM_OF_TYPES], int Brand , int Days) {
+void showData(int cube[DAYS_IN_YEAR][NUM_OF_BRANDS][NUM_OF_TYPES], int Brand , int Days) {
     for (int i = 0; i < Days; i++) {
-        printf("Day %d- SUV: %d Sedan: %d Coupe: %d GT: %d\n", i+1,cube[i][Brand][0],cube[i][Brand][1],cube[i][Brand][2],cube[i][Brand][3]);
+        printf("Day %d- SUV: %d Sedan: %d Coupe: %d GT: %d"
+               "\n", i+1,cube[i][Brand][0],cube[i][Brand][1],cube[i][Brand][2],cube[i][Brand][3]);
     }
 }
 // Calculates the Average Delta Metric in sales between consecutive days for a brand.
-void Avg_Delta_Metric (int cube[DAYS_IN_YEAR][NUM_OF_BRANDS][NUM_OF_TYPES], int days, int brand) {
+void growthOfBrand (int cube[DAYS_IN_YEAR][NUM_OF_BRANDS][NUM_OF_TYPES], int days, int brand) {
     int temp;
     float Avg = 0;
     for(int i = 0; i < days-1; i++) {
-        temp = SumTypes(cube, i+1, brand);
-        if(SumTypes(cube,i,brand) < temp)
-            Avg += temp-SumTypes(cube,i,brand);
-        else if (SumTypes(cube,i,brand) > temp)
-            Avg += temp-SumTypes(cube,i,brand);
+        temp = sumTypes(cube, i+1, brand);
+        Avg += temp-sumTypes(cube,i,brand);
     }
     //here don't count the first day.
     Avg = (float)Avg/(days-1);
     printf("Brand: ");
-    PrintBrand(brand);
+    printBrand(brand);
     printf(", Average Delta: %.6f\n",Avg);
 }
 // Finds the brand with the highest sales for a given day
-int BestBrand(int cube[DAYS_IN_YEAR][NUM_OF_BRANDS][NUM_OF_TYPES], int day) {
+int bestBrand(int cube[DAYS_IN_YEAR][NUM_OF_BRANDS][NUM_OF_TYPES], int day) {
     int TempNumber = 0;
     int max = 0;
-    int bestBrand = -1;//Track the best type.
+    //Track the best type.
+    int bestBrand = -1;
     // It goes over all brands and determine the maximum.
     for (int i = 0; i < NUM_OF_BRANDS; i++) {
-        TempNumber = SumTypes(cube, day, i);// Get the sales for the brand in the given day.
+        // Get the sales for the brand in the given day.
+        TempNumber = sumTypes(cube, day, i);
         if (TempNumber > max) {
             max = TempNumber;
-            bestBrand =i;// Store the type index of the best-selling type.
+            // Store the type index of the best-selling type.
+            bestBrand =i;
         }
     }
     return bestBrand;
 }
 // Finds the type with the best sales in specific brand for a given day.
-int BestType(int cube[DAYS_IN_YEAR][NUM_OF_BRANDS][NUM_OF_TYPES], int day, int brand) {
+int bestType(int cube[DAYS_IN_YEAR][NUM_OF_BRANDS][NUM_OF_TYPES], int day, int brand) {
     int TempNumber = 0;
     int max = 0;
-    int bestType = -1; // Track the best type index .
+    // Track the best type index .
+    int bestType = -1;
     for (int i = 0; i < NUM_OF_TYPES; i++) {
-        TempNumber = cube[day][brand][i]; // Get the sales for the type on the given brand and day
+        // Get the sales for the type on the given brand and day.
+        TempNumber = cube[day][brand][i];
         if (TempNumber > max) {
             max = TempNumber;
-            bestType = i; // Store the type index of the best-selling type
+            // Store the type index of the best-selling type
+            bestType = i;
         }
     }
     return bestType;
 }
 // Search for the brands without data and print their names.
-void MissingData(int cube[DAYS_IN_YEAR][NUM_OF_BRANDS][NUM_OF_TYPES], int Day) {
+void missingData(int cube[DAYS_IN_YEAR][NUM_OF_BRANDS][NUM_OF_TYPES], int Day) {
     printf("No data for brands ");
-    int foundMissing = 0; // Flag to track if any brands have missing data
-
+    // Track if any brands have missing data
+    int foundMissing = 0;
+    int noData = -1;
     // Loop over all brands to check for missing data
     for (int i = 0; i < NUM_OF_BRANDS; i++) {
-        int MissingData = 0;
+        int missingData = 0;
         // Check if any type of data for this brand is missing
         for (int j = 0; j < NUM_OF_TYPES; j++) {
-            if (cube[Day][i][j] == -1) {
-                MissingData = 1;
+            if (cube[Day][i][j] == noData) {
+                missingData = 1;
                 break;
             }
         }
         // If there's missing data, print the brand name
-        if (MissingData) {
-            PrintBrand(i);
+        if (missingData) {
+            printBrand(i);
             printf(" ");
             foundMissing = 1;
         }
@@ -126,22 +129,23 @@ void MissingData(int cube[DAYS_IN_YEAR][NUM_OF_BRANDS][NUM_OF_TYPES], int Day) {
         printf("\nPlease complete the data\n");
 }
 // Asks the user to insert data for a specific brand.
-int AddOne(int arr[DAYS_IN_YEAR][NUM_OF_BRANDS][NUM_OF_TYPES], int day) {
+int enterData(int arr[DAYS_IN_YEAR][NUM_OF_BRANDS][NUM_OF_TYPES], int day) {
     int Brand, SUV, Sedan, Coupe, GT;
-    scanf("%d %d %d %d %d", &Brand, &SUV, &Sedan, &Coupe, &GT);
-    // Check that the brand the user insert exist if not then return 0.
-    if (Brand < 0 || Brand >= NUM_OF_BRANDS) {
+    int noData = -1;
+    scanf("%d", &Brand);
+    if ( Brand < 0 || Brand >= NUM_OF_BRANDS || (arr[day][Brand][0] != noData)) {
         printf("This brand is not valid\n");
-        //That the user didn't insert a valid brand.
         return 0;
-    } else {
+    }
+    scanf("%d %d %d %d", &SUV, &Sedan, &Coupe, &GT);
+    // Check that the brand the user insert exist if not then return 0.
         arr[day][Brand][0] = SUV;
         arr[day][Brand][1] = Sedan;
         arr[day][Brand][2] = Coupe;
         arr[day][Brand][3] = GT;
         return 1;
-    }
 }
+
 
 void printMenu() {
     printf("Welcome to the Cars Data Cube! What would you like to do?\n"
@@ -153,8 +157,6 @@ void printMenu() {
         "6.Provide Average Delta Metrics\n"
         "7.exit\n");
 }
-
-
 int main() {
     int cube[DAYS_IN_YEAR][NUM_OF_BRANDS][NUM_OF_TYPES];
     int days = 0;
@@ -176,32 +178,36 @@ int main() {
                 break;
             }
             // Populate A Day Of Sales For All Brands.
-            case 2: {
+            case addAll: {
                 // Counter for the num brands that the user entered.
                 int counter = 1;
+                int enteredData =0;
+                int validBrand = 0;
                 // The loop will continue until the user insert data for the 5 brands.
                 while (counter <= NUM_OF_BRANDS) {
-                    MissingData(cube, days);
+                    missingData(cube, days);
                     // Check if the user entered a valid brand.
-                    if (AddOne(cube, days) != 0)
+                    enteredData = enterData(cube,days);
+                    if (enteredData != validBrand)
                         counter++;
                 }
                 days++;
                 break;
             }
             // Provide Daily Stats.
-            case 3: {
+            case stats: {
                 int Day;
-                // Prompt the user do enter a day to analyze, and validate the day that the user entered is in range of days.
+                int firstDay = 0;
+                // Prompt the user to enter a day to analyze, and validate the day that the user entered is in range of days.
                 do {
                     printf("What day would you like to analyze?\n");
                     scanf("%d", &Day);
-                    if (Day <= 0 || Day >= days+1)
+                    if (Day <= firstDay || Day >= days+1)
                         printf("Please enter a valid day.\n");
-                } while (Day <= 0 || Day >= days+1);
-                // in the code days are between 0-364 but for the user 1-365 because of that we write Days-1.
+                } while (Day <= firstDay || Day >= days+1);
+                // in the code days are between 0-364 but for the user 1-365 because of that I write Days-1.
                 // Initialize the variable Best_Brand with BestBrand in the given day.
-                int Best_Brand = BestBrand(cube, Day-1);
+                int Best_Brand = bestBrand(cube, Day-1);
                 int Best_Type = 0;
                 int temp = 0;
                 // Determine the best-selling type for the given day by summing sales across brands.
@@ -215,72 +221,85 @@ int main() {
                     }
                 }
                 printf("In day number %d:\n", Day);
-                printf("The sales total was %d\n", SumBrands(cube,Day-1));
-                printf("The best sold brand with %d sales was ",SumTypes(cube,Day-1,Best_Brand));
-                PrintBrand(Best_Brand);
+                // because the days for the user from 1-365 and in the code from 0-364 I subtracted the int Day by 1.
+                printf("The sales total was %d\n", sumBrands(cube,Day-1));
+                printf("The best sold brand with %d sales was ",sumTypes(cube,Day-1,Best_Brand));
+                printBrand(Best_Brand);
                 printf("\nThe best sold type with %d sales was ", temp );
-                PrintType(Best_Type);
+                printType(Best_Type);
                 printf("\n");
                 break;
             }
-            case 4: {
+            // Print The Entire Dataset
+            case print: {
                 printf("*****************************************\n");
+                // Loop that go through all the brands and display their data in all the days.
                 for (int i = 0; i < NUM_OF_BRANDS ;i++) {
-                    printf("Sales for ");
-                    PrintBrand(i);
+                    printf("\nSales for ");
+                    printBrand(i);
                     printf(":\n");
-                    AllData(cube,i,days);
+                    showData(cube,i,days);
                 }
-                printf("*****************************************\n");
+                printf("\n*****************************************\n");
                 break;
             }
-            case 5: {
-                int sum2 = 0;
-                int Profitable_Brand = 0;
-                int Profitable_Type = 0;
+            //Provide Overall (simple) Insights.
+            case insights: {
+                int temp1 = 0;
+                int ProfitableBrand = 0;
+                int ProfitableType = 0;
+                // A loop that go through all the brands and save the index of the most profitable brand overall.
                 for (int i = 0; i < NUM_OF_BRANDS; i++) {
-                    int sum1 = 0;
+                    int temp2 = 0;
                     for (int j = 0; j < days; j++)
-                        sum1 += SumTypes(cube,j,i);
-                    if(sum1 >= sum2 ) {
-                        sum2 = sum1;
-                        Profitable_Brand = i;
+                        temp2 += sumTypes(cube,j,i);
+                    // check which brand has the most sales overall.
+                    if(temp2 >= temp1 ) {
+                        temp1 = temp2;
+                        ProfitableBrand = i;
                     }
                 }
-                int sum4 = 0;
+                int temp3 = 0;
+                //A loop that go through all the types for the 5 brands and save the index of the most profitable type over all.
                 for (int i = 0; i < NUM_OF_TYPES; i++) {
-                    int sum3 = 0;
+                    int temp4 = 0;
+                    // Sum a specific type across all the 5 brands in all the days.
                     for (int j = 0; j < days; j++) {
                         for (int k = 0; k < NUM_OF_BRANDS; k++) {
-                            sum3 += cube[j][k][i];
+                            temp4 += cube[j][k][i];
                         }
                     }
-                    if (sum3 >= sum4) {
-                        sum4 = sum3;
-                        Profitable_Type = i;
+                    // check which type with the most sales overall.
+                    if (temp4 >= temp3) {
+                        temp3 = temp4;
+                        ProfitableType = i;
                     }
                 }
                 int sum = 0;
-                int index = 0;
+                int ProfitableDay = 0;
+                // A loop for that find the day with the most sales for the 5 brands.
                 for (int j = 0; j < days; j++) {
-                    int temp = SumBrands(cube,j);
+                    int temp = sumBrands(cube,j);
                     if (sum < temp) {
                         sum = temp;
-                        index = j;
+                        ProfitableDay = j;
                     }
                 }
                 printf("The best-selling brand overall is ");
-                PrintBrand(Profitable_Brand);
-                printf(": %d$\n",sum2);
+                printBrand(ProfitableBrand);
+                printf(": %d$\n",temp1);
                 printf("The best-selling type of car is ");
-                PrintType(Profitable_Type);
-                printf(": %d$\n",sum4);
-                printf("The most profitable day was day number %d: %d$\n",index+1 ,sum);
+                printType(ProfitableType);
+                printf(": %d$\n",temp3);
+                // because the user see the days from 1-365 I added 1 to the ProfitableDay.
+                printf("The most profitable day was day number %d: %d$\n",ProfitableDay+1 ,sum);
                 break;
             }
-            case 6: {
+            // Provide Average Delta Metrics
+            case deltas: {
+                // A loop that call a function that return that Average Delta Metrics for each brand.
                 for (int i = 0; i < NUM_OF_BRANDS; i++)
-                    Avg_Delta_Metric(cube,days,i);
+                    growthOfBrand(cube,days,i);
                 break;
             }
             default: {
